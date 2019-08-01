@@ -1,16 +1,18 @@
 language: go
 
 go:
-  - 1.6
-  - tip
+  - 1.11.5
 
-install:
-  - go get -v github.com/govend/govend
-  - govend -v
+# Without this go11 modules will be disabled
+env:
+  - GO111MODULE=on
 
-# The default script is go test -v ./... which will test everything in the vendor directory.
-# Only testing this project.
+# Disable the old go get way travis will still automatically do if you use 'language: go'
+install: true
+
 script:
+  - go build
   - go test -v -short .
+
   # Race tests are failing due to data race on switching sampleHasher.
   #- go test . -run Test_Race_ -race -count 100 -cpu 1,2,4,8,16

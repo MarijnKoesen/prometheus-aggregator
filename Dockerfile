@@ -1,9 +1,11 @@
-FROM alpine:3.1
-MAINTAINER Roland Rifandi Utama <roland_hawk@yahoo.com>
+FROM golang:1.11.5 as builder
+MAINTAINER Marijn Koesen <github@koesen.nl>
+ADD . /build
+RUN cd /build && GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o /bin/prometheus-aggregator
 
-WORKDIR /app
+
+
+FROM alpine:latest
 EXPOSE 8080/udp 9090
-
-COPY ./deploy/_output/prometheus-aggregator /app/
-
-ENTRYPOINT ["/app/prometheus-aggregator"]
+COPY --from=builder /bin/prometheus-aggregator /bin/prometheus-aggregator
+ENTRYPOINT ["/bin/prometheus-aggregator"]
